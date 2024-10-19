@@ -8,6 +8,8 @@ pos = []
 current_player = 1
 winner = 0
 game_over = False
+winner = 0
+game_over = False
 line_width = 6
 game_state = [[0, 0, 0],
               [0, 0, 0],
@@ -40,6 +42,39 @@ def draw_markers():
             y_pos += 1
         x_pos += 1
 
+def check_winner():
+    global winner
+    global game_over
+
+    y_pos = 0
+    for x in game_state:
+        if sum(x) == 3: 
+            winner = 1
+            game_over = True
+        if sum(x) == -3:
+            winner = 2
+            game_over = True
+        if game_state[0][y_pos] + game_state[1][y_pos] + game_state[2][y_pos] == 3: #check rows
+            winner = 1
+            game_over = True
+        if game_state[0][y_pos] + game_state[1][y_pos] + game_state[2][y_pos] == -3:
+            winner = 2
+            game_over = True
+        y_pos += 1
+
+    if game_state[0][0] + game_state[1][1] + game_state[2][2] == 3 or game_state[0][2] + game_state[1][1] + game_state[2][0] == 3:
+            winner = 1
+            game_over = True
+    if game_state[0][0] + game_state[1][1] + game_state[2][2] == -3 or game_state[0][2] + game_state[1][1] + game_state[2][0] == -3:
+            winner = 2
+            game_over = True
+
+def draw_winner(winner):
+    win_text = f'Player {winner} wins!'
+    win_img = font.render(win_text, True, (255, 100, 255))
+    pygame.draw.rect(screen, (150, 50, 150), (screen_width//2 - win_img.get_width()//2 - 20, screen_height//2 - win_img.get_height()//2 - 20, 230, 65))
+    screen.blit(win_img, (screen_width//2 - win_img.get_width()//2, screen_height//2 - win_img.get_height()//2))
+
 run = True
 while run:
 
@@ -48,6 +83,15 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if not game_over:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                mouse_x = pos[0]
+                mouse_y = pos[1]
+                if game_state[mouse_x // (screen_width // 3)][mouse_y // (screen_height // 3)] == 0:
+                    game_state[mouse_x // (screen_width // 3)][mouse_y // (screen_height // 3)] = current_player
+                    current_player *= -1
+                    check_winner()
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             mouse_x = pos[0]
@@ -55,5 +99,7 @@ while run:
             if game_state[mouse_x // (screen_width // 3)][mouse_y // (screen_height // 3)] == 0:
                 game_state[mouse_x // (screen_width // 3)][mouse_y // (screen_height // 3)] = current_player
                 current_player *= -1
+    if game_over:
+        draw_winner(winner)
     pygame.display.update()
 pygame.quit()
