@@ -77,6 +77,10 @@ def draw_winner(winner):
     win_img = font.render(win_text, True, (255, 100, 255))
     pygame.draw.rect(screen, (150, 50, 150), (35, 117, 230, 65))
     screen.blit(win_img, (screen_width//2 - win_img.get_width()//2, screen_height//2 - win_img.get_height()//2))
+    again_text = 'Play again'
+    again_img = font.render(again_text, True, (255, 100, 255))
+    pygame.draw.rect(screen, (150, 50, 150), again_rect)
+    screen.blit(again_img, (screen_width//2 - again_img.get_width()//2, screen_height//2 - again_img.get_height()//2 + 80))
 
 run = True
 while run:
@@ -104,5 +108,15 @@ while run:
                 current_player *= -1
     if game_over:
         draw_winner(winner)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if again_rect.collidepoint(pos):
+                current_player = 1
+                winner = 0
+                game_over = False
+                pos = []
+                game_state = [[0, 0, 0],
+                              [0, 0, 0],
+                              [0, 0, 0]]
     pygame.display.update()
 pygame.quit()
